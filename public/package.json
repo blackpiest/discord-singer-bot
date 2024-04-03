@@ -1,0 +1,12 @@
+{
+  "name": "discord-voice-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "discord-bot.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node discord-bot.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
