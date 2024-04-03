@@ -1,8 +1,6 @@
-import { AudioResource } from "@discordjs/voice";
-
 interface QueueItem {
   id: string;
-  resource: AudioResource<MediaMetadata>;
+  url: string;
 }
 
 export class Channel {
@@ -22,6 +20,10 @@ export class Channel {
     return this._queue;
   }
 
+  private set queue(items: QueueItem[]) {
+    this._queue = items;
+  }
+
   public get currentSong(): QueueItem | null {
     return this._currentSong;
   }
@@ -39,28 +41,27 @@ export class Channel {
   }
 
   public get hasMore(): boolean {
-    return this._queue.length >= 1;
+    return this.queue.length >= 1;
   }
 
   public addToQueue(item: QueueItem) {
-    this._queue.push(item);
-    if (this.queue.length === 1) {
-      this.currentSong = this._queue.shift();
-    }
-    console.log('addToQueue: ', this._queue, this.currentSong, this._queue);
+    this.queue.push(item);
+    console.log('addToQueue: ', this.queue);
   }
 
   public stop() {
     this.currentSong = null;
-    console.log('Stop: ', this.currentSong);
+    this.queue = [];
+    console.log('Stop: ', this.currentSong, this.queue);
   }
   
-  public nextSong() {
+  public nextPlay() {
     if (this.repeatEnabled) {
+      console.log('is Repeat.')
       this.addToQueue(this.currentSong);
-    } else {
-      this.currentSong = this._queue.shift() || null;
     }
-    console.log('nextSong: ', this.currentSong, this.queue);
+    this.currentSong = this.queue.shift() || null;
+
+    console.log('nextPlay (currentSong): ', this.currentSong);
   }
 }

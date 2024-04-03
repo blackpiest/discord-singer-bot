@@ -5,56 +5,66 @@ import { Channel } from './Data';
 
 const player = createAudioPlayer();
 const myChannel = new Channel('testId');
-let isStart = false;
+
+/**
+ * TODO: Добавить возможность воспроизводить плейлисты.
+ * TODO: Добавить поддержку нескольких каналов.
+*/
+
+player.on('error', error => {
+  console.error('Error:', error.message, 'with track', error.resource.metadata);
+});
+
+player.on('stateChange', (oldState, newState) => {
+  if (newState.status === AudioPlayerStatus.Idle) {
+    console.log('Проигрывание ресурса закончено');
+    myChannel.nextPlay();
+    
+    if (myChannel.currentSong) {
+      const resource = getYoutubeResource(myChannel.currentSong.url);
+      console.log('Началось проигрывание: ', myChannel.currentSong);
+      player.play(resource);
+    }
+  }
+});
 
 client.on('messageCreate', function(message) {
   if (message.content.startsWith('!play')) {
+    const url = message.content.split(' ')[1];
+    const id = String(new Date().getTime() || url);
+
+    if (!getYoutubeResource(url)) {
+      message.reply('Указана невалидная ссылка.');
+      return;
+    }
+
     const channel = message.member.voice.channel;
     const connection = joinVoiceChannel({
       channelId: channel.id,
       guildId: channel.guild.id,
       adapterCreator: channel.guild.voiceAdapterCreator,
     });
-    const url = message.content.split(' ')[1];
-
-
-    const resource = getYoutubeResource(url);
-    if (!resource) {
-      message.reply('Ошибка воспроизведения!');
-      return;
-    }
-
-    // TODO: Надо хранить в очереди не ресурс, а url, и каждый раз перед воспроизведением создавать новый ресурс.
     
-    myChannel.addToQueue({id: url, resource});
-    if (!isStart) {
-      player.play(myChannel.currentSong.resource);
-      isStart = true;
+    myChannel.addToQueue({id, url});
+    if (myChannel.queue.length === 1 && !myChannel.currentSong) {
+      myChannel.nextPlay();
+      const resource = getYoutubeResource(myChannel.currentSong.url);
+      player.play(resource);
     }
     
-    player.on('error', error => {
-      console.error('Error:', error.message, 'with track', error.resource.metadata);
-    });
-    player.on('stateChange', (oldState, newState) => {
-      if (newState.status === AudioPlayerStatus.Idle) {
-        // Проигрывание ресурса закончено
-        console.log('Проигрывание ресурса закончено');
-        myChannel.nextSong();
-        
-        if (myChannel.currentSong) {
-          player.play(myChannel.currentSong.resource);
-        }
-      }
-    });
     connection.subscribe(player);
   }
   if (message.content.startsWith('!stop')) {
     player.stop();
+    myChannel.stop();
   }
   if (message.content.startsWith('!skip')) {
     player.stop();
-    myChannel.nextSong();
-    player.play(myChannel.queue[0].resource);
+    myChannel.nextPlay();
+    const resource = getYoutubeResource(myChannel.queue[0]?.url);
+    if (resource) {
+      player.play(resource);
+    }
   }
   if (message.content.startsWith('!pause')) {
     player.pause();
