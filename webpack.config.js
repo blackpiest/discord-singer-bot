@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import TerserPlugin from 'terser-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 import nodeExternals from 'webpack-node-externals';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,6 +28,13 @@ export default {
   resolve: {
     extensions: ['.ts', '.js'],
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, "public/package.json"), to: path.resolve(__dirname, 'dist') },
+      ],
+    }),
+  ],
   optimization: {
     minimizer: [new TerserPlugin({
       extractComments: false,
