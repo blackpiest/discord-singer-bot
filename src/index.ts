@@ -1,15 +1,23 @@
-import { joinVoiceChannel, createAudioPlayer, AudioPlayerStatus } from '@discordjs/voice';
+import { createAudioPlayer, AudioPlayerStatus } from '@discordjs/voice';
 import { client } from './config';
 import { getYoutubeResource } from './lib/getYoutubeResource';
 import { Channel } from './Data';
+import { Collection, Events } from 'discord.js';
+import { playCommand } from './commands/utility/play';
+import { deployCommands } from './deployCommands';
 
 const player = createAudioPlayer();
 const myChannel = new Channel('testId');
+
+deployCommands();
 
 /**
  * TODO: Добавить возможность воспроизводить плейлисты.
  * TODO: Добавить поддержку нескольких каналов.
 */
+
+client.commands = new Collection();
+client.commands.set(playCommand.data.name, playCommand);
 
 player.on('error', error => {
   console.error('Error:', error.message, 'with track', error.resource.metadata);
@@ -28,60 +36,25 @@ player.on('stateChange', (oldState, newState) => {
   }
 });
 
-client.on('messageCreate', function(message) {
-  if (message.content.startsWith('!play')) {
-    const url = message.content.split(' ')[1];
-    const id = String(new Date().getTime() || url);
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
 
-    if (!getYoutubeResource(url)) {
-      message.reply('Указана невалидная ссылка.');
-      return;
-    }
+  const command = interaction.client.commands.get(interaction.commandName);
 
-    const channel = message.member.voice.channel;
-    const connection = joinVoiceChannel({
-      channelId: channel.id,
-      guildId: channel.guild.id,
-      adapterCreator: channel.guild.voiceAdapterCreator,
-    });
-    
-    myChannel.addToQueue({id, url});
-    if (myChannel.queue.length === 1 && !myChannel.currentSong) {
-      myChannel.nextPlay();
-      const resource = getYoutubeResource(myChannel.currentSong.url);
-      player.play(resource);
-    }
-    
-    connection.subscribe(player);
-  }
-  if (message.content.startsWith('!stop')) {
-    player.stop();
-    myChannel.stop();
-  }
-  if (message.content.startsWith('!skip')) {
-    player.stop();
-    myChannel.nextPlay();
-    const resource = getYoutubeResource(myChannel.queue[0]?.url);
-    if (resource) {
-      player.play(resource);
-    }
-  }
-  if (message.content.startsWith('!pause')) {
-    player.pause();
-  }
-  if (message.content.startsWith('!unpause')) {
-    player.unpause();
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
   }
 
-  if (message.content.startsWith('!repeat')) {
-    if (myChannel.repeatEnabled) {
-      myChannel.repeatEnabled = false;
-      console.log('Повтор отключен!')
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
     } else {
-      myChannel.repeatEnabled = true;
-      console.log('На повторе!')
+      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
     }
-
   }
 });
 
