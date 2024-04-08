@@ -5,8 +5,6 @@ import { playCommand } from './commands/utility/play';
 import { initPlayer } from './player';
 
 const myChannel = new Channel('testId');
-
-// deployCommands();
 initPlayer(myChannel);
 
 client.commands = new Collection();
