@@ -11,9 +11,12 @@ const __dirname = dirname(__filename);
 export default {
   target: 'node',
   externals: [nodeExternals()],
-  entry: './src/index.ts',
+  entry: {
+    'discord-bot': './src/index.ts',
+    'deploy-commands': './src/commands/deployCommands.ts',
+  },
   output: {
-    filename: 'discord-bot.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   module: {

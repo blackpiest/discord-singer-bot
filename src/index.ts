@@ -2,7 +2,6 @@ import { client } from './config';
 import { Channel } from './Data';
 import { Collection, Events } from 'discord.js';
 import { playCommand } from './commands/utility/play';
-import { deployCommands } from './commands/deployCommands';
 import { initPlayer } from './player';
 
 const myChannel = new Channel('testId');
