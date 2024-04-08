@@ -1,12 +1,13 @@
 import { Channel } from '@/Data';
 import { client } from '@/config';
 import { getVoiceChat } from '@/lib/getVoiceChat';
+import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 
-export const repeatCommand = {
+export const stopCommand = {
   data: new SlashCommandBuilder()
-    .setName('repeat')
-    .setDescription('Включить повторное проигрывание треков.'),
+    .setName('stop')
+    .setDescription('Остановить воспроизведение треков и очистить очередь.'),
   execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
@@ -15,15 +16,9 @@ export const repeatCommand = {
       return;
     }
 
-    if (channelUsed.repeatEnabled) {
-      channelUsed.repeatEnabled = false;
-      interaction.reply(':x::repeat: Повтор треков отключён.');
-      console.log('Повтор отключён!');
-    } else {
-      channelUsed.repeatEnabled = true;
-      interaction.reply(':white_check_mark::repeat: Повтор треков включён.');
-      console.log('Повтор включён!');
-    }
-
+    player.stop();
+    channelUsed.stop();
+    await interaction.reply(':no_entry_sign: Музыка отключена.');
+    console.log('Музыка отключена.');
   }
 };

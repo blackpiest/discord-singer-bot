@@ -8,12 +8,14 @@ export class Channel {
   private _queue: QueueItem[];
   private _currentSong: QueueItem | null;
   private _repeatEnabled: boolean;
+  private _pauseEnabled: boolean;
 
   constructor(channelId: string) {
     this.channelId = channelId;
     this._queue = [];
     this._currentSong = null;
     this._repeatEnabled = false;
+    this._pauseEnabled = false;
   }
 
   public get queue(): QueueItem[] {
@@ -24,7 +26,7 @@ export class Channel {
     this._queue = items;
   }
 
-  public get currentSong(): QueueItem | null {
+  public get currentSong(): (QueueItem | null) {
     return this._currentSong;
   }
 
@@ -38,6 +40,14 @@ export class Channel {
 
   public set repeatEnabled(value : boolean) {
     this._repeatEnabled = value;
+  }
+
+  public get pauseEnabled() : boolean {
+    return this._pauseEnabled;
+  }
+
+  public pause(value: boolean) {
+    this._pauseEnabled = value;
   }
 
   public get hasMore(): boolean {
@@ -57,7 +67,7 @@ export class Channel {
   
   public nextPlay() {
     if (this.repeatEnabled) {
-      console.log('is Repeat.')
+      console.log('is Repeat.');
       this.addToQueue(this.currentSong);
     }
     this.currentSong = this.queue.shift() || null;
