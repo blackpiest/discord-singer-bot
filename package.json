@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "webpack --mode=production --config webpack.config.js",
-    "start": "node dist/discord-bot.js "
+    "start": "node dist/discord-bot.js ",
+    "dev": "npm run build && npm start"
   },
   "author": "blackpiest",
   "license": "ISC",

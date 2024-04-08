@@ -1,40 +1,17 @@
-import { createAudioPlayer, AudioPlayerStatus } from '@discordjs/voice';
 import { client } from './config';
-import { getYoutubeResource } from './lib/getYoutubeResource';
 import { Channel } from './Data';
 import { Collection, Events } from 'discord.js';
 import { playCommand } from './commands/utility/play';
-import { deployCommands } from './deployCommands';
+import { deployCommands } from './commands/deployCommands';
+import { initPlayer } from './player';
 
-const player = createAudioPlayer();
 const myChannel = new Channel('testId');
 
-deployCommands();
-
-/**
- * TODO: Добавить возможность воспроизводить плейлисты.
- * TODO: Добавить поддержку нескольких каналов.
-*/
+// deployCommands();
+initPlayer(myChannel);
 
 client.commands = new Collection();
 client.commands.set(playCommand.data.name, playCommand);
-
-player.on('error', error => {
-  console.error('Error:', error.message, 'with track', error.resource.metadata);
-});
-
-player.on('stateChange', (oldState, newState) => {
-  if (newState.status === AudioPlayerStatus.Idle) {
-    console.log('Проигрывание ресурса закончено');
-    myChannel.nextPlay();
-    
-    if (myChannel.currentSong) {
-      const resource = getYoutubeResource(myChannel.currentSong.url);
-      console.log('Началось проигрывание: ', myChannel.currentSong);
-      player.play(resource);
-    }
-  }
-});
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
@@ -47,7 +24,7 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   try {
-    await command.execute(interaction);
+    await command.execute(interaction, myChannel);
   } catch (error) {
     console.error(error);
     if (interaction.replied || interaction.deferred) {
