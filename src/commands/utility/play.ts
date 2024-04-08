@@ -46,14 +46,13 @@ export const playCommand = {
     });
     
     channelUsed.addToQueue({ id, url: link });
+    const videoInfo = await getVideoInfo(link);
+    await interaction.reply(`:microphone: Добавлено в очередь: ${videoInfo?.title || 'VIDEO_TITLE'} [${getVideoDuration(Number(videoInfo?.lengthSeconds || 0))}]`);
 
     if (channelUsed.queue.length === 1 && !channelUsed.currentSong) {
       channelUsed.nextPlay();
 
       const resource = getYoutubeResource(channelUsed.currentSong.url);
-      const videoInfo = await getVideoInfo(channelUsed.currentSong.url);
-
-      await interaction.reply(`:microphone: Добавлено в очередь: ${videoInfo?.title || 'VIDEO_TITLE'} [${getVideoDuration(Number(videoInfo?.lengthSeconds || 0))}]`);
       player.play(resource);
     }
     

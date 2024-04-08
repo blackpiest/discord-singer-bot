@@ -18,7 +18,7 @@ export const stopCommand = {
 
     player.stop();
     channelUsed.stop();
-    await interaction.reply(':no_entry_sign: Музыка отключена.');
+    await interaction.reply(':stop_button: Музыка отключена.');
     console.log('Музыка отключена.');
   }
 };
