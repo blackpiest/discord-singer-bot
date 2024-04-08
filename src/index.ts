@@ -1,14 +1,17 @@
 import { client } from './config';
 import { Channel } from './Data';
 import { Collection, Events } from 'discord.js';
-import { playCommand } from './commands/utility/play';
 import { initPlayer } from './player';
+import { commands } from './commands/utility';
 
 const myChannel = new Channel('testId');
 initPlayer(myChannel);
 
 client.commands = new Collection();
-client.commands.set(playCommand.data.name, playCommand);
+
+for (let i=0; i< commands.length; i++) {
+  client.commands.set(commands[i].data.name, commands[i]);
+}
 
 client.on(Events.InteractionCreate, async interaction => {
   if (!interaction.isChatInputCommand()) return;
