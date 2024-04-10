@@ -1,5 +1,4 @@
-import { Channel } from '@/Data';
-import { client } from '@/config';
+import { Channel } from '@/types/channel';
 import { getVideoDuration } from '@/lib/getVideoDuration';
 import { getVideoInfo } from '@/lib/getVideoInfo';
 import { getYoutubeResource } from '@/lib/getYoutubeResource';
@@ -7,6 +6,7 @@ import { player } from '@/player';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { getVoiceChat } from '@/lib/getVoiceChat';
+import { client } from '@/client';
 
 export const playCommand = {
   data: new SlashCommandBuilder()
@@ -47,7 +47,7 @@ export const playCommand = {
     
     channelUsed.addToQueue({ id, url: link });
     const videoInfo = await getVideoInfo(link);
-    await interaction.reply(`:microphone: Добавлено в очередь: ${videoInfo?.title || 'VIDEO_TITLE'} [${getVideoDuration(Number(videoInfo?.lengthSeconds || 0))}]`);
+    await interaction.reply(`:musical_note: Добавлено в очередь: ${videoInfo?.title || 'VIDEO_TITLE'} [${getVideoDuration(Number(videoInfo?.lengthSeconds || 0))}]`);
 
     if (channelUsed.queue.length === 1 && !channelUsed.currentSong) {
       channelUsed.nextPlay();

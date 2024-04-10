@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import { REST } from 'discord.js';
 import { Routes } from 'discord-api-types/v9';
-import { CLIENT_ID, TOKEN } from '../config';
-import { commands } from './utility';
+import { CLIENT_ID, TOKEN } from '@/config';
+import { commands } from '../index';
 
 
 function deployCommands() {

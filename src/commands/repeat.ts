@@ -1,7 +1,7 @@
-import { Channel } from '@/Data';
-import { client } from '@/config';
+import { Channel } from '@/types/channel';
 import { getVoiceChat } from '@/lib/getVoiceChat';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { client } from '@/client';
 
 export const repeatCommand = {
   data: new SlashCommandBuilder()

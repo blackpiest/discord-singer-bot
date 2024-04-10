@@ -1,9 +1,9 @@
-import { Channel } from '@/Data';
-import { client } from '@/config';
+import { Channel } from '@/types/channel';
 import { getYoutubeResource } from '@/lib/getYoutubeResource';
 import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { getVoiceChat } from '@/lib/getVoiceChat';
+import { client } from '@/client';
 
 export const skipCommand = {
   data: new SlashCommandBuilder()
