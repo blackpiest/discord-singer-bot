@@ -1,6 +1,12 @@
 interface QueueItem {
   id: string;
   url: string;
+  name?: string;
+  author?: {
+    name: string;
+    user: string;
+    url: string;
+  };
 }
 
 export class Channel {
@@ -55,6 +61,7 @@ export class Channel {
   }
 
   public addToQueue(item: QueueItem) {
+    this.queue = this.queue.filter(Boolean);
     this.queue.push(item);
     console.log('addToQueue: ', this.queue);
   }

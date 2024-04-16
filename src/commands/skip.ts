@@ -24,11 +24,14 @@ export const skipCommand = {
 
     player.stop();
     channelUsed.nextPlay();
-    const resource = getYoutubeResource(channelUsed.queue[0]?.url);
+    console.log('[DISCORD-SINGER-BOT]: Пропуск трека.');
+    const resource = getYoutubeResource(channelUsed.currentSong?.url);
     if (resource) {
       player.play(resource);
       await interaction.reply(':track_next: Останавливаю текущий трек и включаю следующий.');
       console.log('Включается следующий трек.');
+    } else {
+      await interaction.reply(':track_next: Останавливаю текущий трек. В очереди больше нет треков.');
     }
   }
 };

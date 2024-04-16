@@ -7,6 +7,7 @@ import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { getVoiceChat } from '@/lib/getVoiceChat';
 import { client } from '@/client';
+import ytdl from 'ytdl-core';
 
 export const playCommand = {
   data: new SlashCommandBuilder()
@@ -44,10 +45,11 @@ export const playCommand = {
       guildId: voiceChannel.guild.id,
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
-    
-    channelUsed.addToQueue({ id, url: link });
     const videoInfo = await getVideoInfo(link);
-    await interaction.reply(`:musical_note: Добавлено в очередь: ${videoInfo?.title || 'VIDEO_TITLE'} [${getVideoDuration(Number(videoInfo?.lengthSeconds || 0))}]`);
+    const authorInfo = videoInfo.author as ytdl.Author;
+    
+    channelUsed.addToQueue({ id, url: link, name: videoInfo.title, author: { name: authorInfo.name, url: authorInfo.channel_url, user: authorInfo.user || 'USER' } });
+    await interaction.reply(`:musical_note: Добавлено в очередь: ${videoInfo.title} [${getVideoDuration(Number(videoInfo.lengthSeconds))}]`);
 
     if (channelUsed.queue.length === 1 && !channelUsed.currentSong) {
       channelUsed.nextPlay();
