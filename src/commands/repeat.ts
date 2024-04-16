@@ -10,7 +10,7 @@ export const repeatCommand = {
   execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
-      await interaction.reply('Необходимо находиться в голосовом канале.');
+      await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
       console.log('[WARNING]: Попытка вызова бота (/stop) вне голосового канала.');
       return;
     }

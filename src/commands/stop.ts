@@ -11,8 +11,13 @@ export const stopCommand = {
   execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
-      await interaction.reply('Необходимо находиться в голосовом канале.');
+      await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
       console.log('[WARNING]: Попытка вызова бота (/stop) вне голосового канала.');
+      return;
+    }
+
+    if (!channelUsed.currentSong && !channelUsed.hasMore) {
+      await interaction.reply({ content: 'Треков в очереди нет.', ephemeral: true });
       return;
     }
 

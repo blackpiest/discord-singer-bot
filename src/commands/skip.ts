@@ -12,13 +12,13 @@ export const skipCommand = {
   execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
-      await interaction.reply('Необходимо находиться в голосовом канале.');
+      await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
       console.log('[WARNING]: Попытка вызова бота (/skip) вне голосового канала.');
       return;
     }
 
     if (!channelUsed.currentSong && !channelUsed.queue.length) {
-      await interaction.reply('Треков в очереди нет.');
+      await interaction.reply({ content: 'Треков в очереди нет.', ephemeral: true });
       return;
     }
 

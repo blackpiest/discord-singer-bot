@@ -1,13 +1,11 @@
 {
   "name": "discord-singer-bot",
   "version": "1.0.0",
-  "description": "",
   "main": "discord-bot.js",
   "type": "commonjs",
   "scripts": {
     "start": "node discord-bot.js",
     "deploy:commands": "node deploy-commands.js"
   },
-  "author": "blackpiest",
   "license": "ISC"
 }

@@ -22,20 +22,20 @@ export const playCommand = {
     const id = String(new Date().getTime() || link);
 
     if (!link) {
-      await interaction.reply('Ссылка на видео не указана.');
+      await interaction.reply({ content: 'Ссылка на видео не указана.', ephemeral: true });
       console.log('[WARNING]: Ссылка на видео не указана.');
       return;  
     }
 
     if (!getYoutubeResource(link)) {
-      interaction.reply('Указана невалидная ссылка.');
+      interaction.reply({ content: 'Указана невалидная ссылка.', ephemeral: true });
       console.log('[WARNING]: Указана невалидная ссылка: ' + link);
       return;
     }
 
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
-      await interaction.reply('Необходимо находиться в голосовом канале.');
+      await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
       console.log('[WARNING]: Попытка вызова бота (/play) вне голосового канала.');
       return;
     }
