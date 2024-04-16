@@ -1,6 +1,6 @@
 import { MoreVideoDetails, VideoDetails, getInfo } from 'ytdl-core';
 
-export function getVideoInfo(url: string): Promise<MoreVideoDetails | VideoDetails | null> {
+export async function getVideoInfo(url: string): Promise<MoreVideoDetails | VideoDetails | null> {
   return getInfo(url).then(info => {
     return info.videoDetails;
   })

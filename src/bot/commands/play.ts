@@ -1,13 +1,10 @@
-import { Channel } from '@/types/channel';
-import { getVideoDuration } from '@/lib/getVideoDuration';
-import { getVideoInfo } from '@/lib/getVideoInfo';
-import { getYoutubeResource } from '@/lib/getYoutubeResource';
+import { getVideoDuration, getVideoInfo, getYoutubeResource, getVoiceChat, getPlaylistInfo } from '@/core/lib';
 import { player } from '@/player';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { getVoiceChat } from '@/lib/getVoiceChat';
 import { client } from '@/client';
 import ytdl from 'ytdl-core';
+import { Channel } from '@/core/entities/Channel';
 
 export const playCommand = {
   data: new SlashCommandBuilder()

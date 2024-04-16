@@ -1,7 +1,7 @@
 import { Client, Collection, Events, GatewayIntentBits  } from 'discord.js';
-import { TOKEN } from './config';
-import { commands } from './commands';
-import { Channel } from './types/channel';
+import { TOKEN } from '@/core/config';
+import { commands } from './bot/commands';
+import { Channel } from './core/entities/Channel';
 
 export const client = new Client({ intents: [ 
   GatewayIntentBits.Guilds, 

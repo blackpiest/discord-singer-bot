@@ -1,8 +1,8 @@
-import { Channel } from '@/types/channel';
-import { getVoiceChat } from '@/lib/getVoiceChat';
+import { getVoiceChat } from '@/core/lib';
 import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { client } from '@/client';
+import { Channel } from '@/core/entities/Channel';
 
 export const stopCommand = {
   data: new SlashCommandBuilder()

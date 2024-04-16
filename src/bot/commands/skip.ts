@@ -1,9 +1,8 @@
-import { Channel } from '@/types/channel';
-import { getYoutubeResource } from '@/lib/getYoutubeResource';
+import { getYoutubeResource, getVoiceChat } from '@/core/lib';
 import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { getVoiceChat } from '@/lib/getVoiceChat';
 import { client } from '@/client';
+import { Channel } from '@/core/entities/Channel';
 
 export const skipCommand = {
   data: new SlashCommandBuilder()
@@ -28,7 +27,7 @@ export const skipCommand = {
     const resource = getYoutubeResource(channelUsed.currentSong?.url);
     if (resource) {
       player.play(resource);
-      await interaction.reply(':track_next: Останавливаю текущий трек и включаю следующий.');
+      await interaction.reply(`:track_next: Останавливаю текущий трек. Включаю ${channelUsed.currentSong.name}`);
       console.log('Включается следующий трек.');
     } else {
       await interaction.reply(':track_next: Останавливаю текущий трек. В очереди больше нет треков.');

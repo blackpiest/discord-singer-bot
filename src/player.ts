@@ -1,6 +1,6 @@
 import { AudioPlayerStatus, createAudioPlayer } from '@discordjs/voice';
-import { getYoutubeResource } from '@/lib/getYoutubeResource';
-import { Channel } from '@/types/channel';
+import { getYoutubeResource } from '@/core/lib';
+import { Channel } from './core/entities/Channel';
 
 export const player = createAudioPlayer();
 
