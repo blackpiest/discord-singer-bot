@@ -2,6 +2,7 @@ import { Client, Collection, Events, GatewayIntentBits  } from 'discord.js';
 import { TOKEN } from '@/core/config';
 import { commands } from './bot/commands';
 import { Channel } from './core/entities/Channel';
+import { player } from './player';
 
 export const client = new Client({ intents: [ 
   GatewayIntentBits.Guilds, 
@@ -40,8 +41,16 @@ export function initClient(channel: Channel) {
       }
     }
   });
+
+  client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    const voiceChannel = newState.channel;
+    if (!voiceChannel) {
+      channel.stop();
+      player.stop();
+    }
+  });
   
-  client.on('ready', () => {
+  client.on(Events.ClientReady, () => {
     console.log(`[DISCORD-SINGER-BOT]: Бот ${client.user.tag} запущен!`);
   });
 }
