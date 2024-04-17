@@ -1,8 +1,9 @@
 import { Client, Collection, Events, GatewayIntentBits  } from 'discord.js';
-import { TOKEN } from '@/core/config';
+import { TOKEN } from './core/config';
 import { commands } from './bot/commands';
-import { Channel } from './core/entities/Channel';
-import { player } from './player';
+import { Bot } from './core/entities/Bot';
+import { db } from './core/services/db';
+import { getVoiceChat } from './core/lib';
 
 export const client = new Client({ intents: [ 
   GatewayIntentBits.Guilds, 
@@ -11,9 +12,9 @@ export const client = new Client({ intents: [
   GatewayIntentBits.DirectMessages, 
   GatewayIntentBits.GuildVoiceStates,
 ] });
-client.login(TOKEN);
 
-export function initClient(channel: Channel) {
+export function initClient() {
+  client.login(TOKEN);
   client.commands = new Collection();
 
   for (let i=0; i< commands.length; i++) {
@@ -29,9 +30,15 @@ export function initClient(channel: Channel) {
       console.error(`[DISCORD-SINGER-BOT]: Команда "${interaction.commandName}" не была найдена.`);
       return;
     }
-  
+    const currentVoiceChat = getVoiceChat(client, interaction);
+    const channelId = currentVoiceChat.id;
+    const hasChannel = Boolean(db[channelId]);
+    if (!hasChannel) {
+      db[channelId] = new Bot(channelId);
+    }
+    
     try {
-      await command.execute(interaction, channel);
+      await command.execute(interaction, db[channelId]);
     } catch (error) {
       console.error('[DISCORD-SINGER-BOT]: Произошла ошибка. ' + error);
       if (interaction.replied || interaction.deferred) {
@@ -39,14 +46,6 @@ export function initClient(channel: Channel) {
       } else {
         await interaction.reply({ content: 'При выполнении этой команды произошла ошибка!', ephemeral: true });
       }
-    }
-  });
-
-  client.on(Events.VoiceStateUpdate, (oldState, newState) => {
-    const voiceChannel = newState.channel;
-    if (!voiceChannel) {
-      channel.stop();
-      player.stop();
     }
   });
   

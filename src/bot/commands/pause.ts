@@ -1,14 +1,13 @@
-import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { getVoiceChat } from '@/core/lib';
 import { client } from '@/client';
-import { Channel } from '@/core/entities/Channel';
+import { Bot } from '@/core/entities/Bot';
 
 export const pauseCommand = {
   data: new SlashCommandBuilder()
     .setName('pause')
     .setDescription('Поставить/снять паузу.'),
-  execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
+  execute: async function(interaction: CommandInteraction, currentBot?: Bot): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
       await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
@@ -16,19 +15,19 @@ export const pauseCommand = {
       return;
     }
 
-    if (!channelUsed.currentSong) {
+    if (!currentBot.currentSong) {
       await interaction.reply('Треков в очереди нет.');
       return;
     }
 
-    if (channelUsed.pauseEnabled) {
-      player.unpause();
-      channelUsed.pause(false);
+    if (currentBot.pauseEnabled) {
+      currentBot.player.unpause();
+      currentBot.pause(false);
     } else {
-      player.pause();
-      channelUsed.pause(true);
+      currentBot.player.pause();
+      currentBot.pause(true);
     }
-    await interaction.reply(channelUsed.pauseEnabled ? ':pause_button: Проигрывание остановлено.' : ':arrow_forward: Проигрывание возобновлено.');
-    console.log(channelUsed.pauseEnabled ? 'Проигрывание остановлено.' : 'Проигрывание возобновлено.');
+    await interaction.reply(currentBot.pauseEnabled ? ':pause_button: Проигрывание остановлено.' : ':arrow_forward: Проигрывание возобновлено.');
+    console.log(currentBot.pauseEnabled ? 'Проигрывание остановлено.' : 'Проигрывание возобновлено.');
   }
 };

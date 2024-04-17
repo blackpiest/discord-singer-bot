@@ -1,9 +1,8 @@
 import { getYoutubeResource, getVoiceChat, getPlaylistInfo } from '@/core/lib';
-import { player } from '@/player';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { client } from '@/client';
-import { Channel } from '@/core/entities/Channel';
+import { Bot } from '@/core/entities/Bot';
 
 export const playlistCommand = {
   data: new SlashCommandBuilder()
@@ -13,7 +12,7 @@ export const playlistCommand = {
       option.setName('link')
         .setDescription('Ссылка на ютуб-плейлист.')
         .setRequired(true)),
-  execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
+  execute: async function(interaction: CommandInteraction, currentBot?: Bot): Promise<void> {
     const link = String(interaction.options?.get('link')?.value || '');
 
     if (!link) {
@@ -38,12 +37,12 @@ export const playlistCommand = {
     }
 
     playlistInfo.forEach(item => {
-      channelUsed.addToQueue({ id: item.id, url: item.url, author: { name: item.author.name, url: item.author.url, user: item.author.channelID }, name: item.title });
+      currentBot.addToQueue({ id: item.id, url: item.url, author: { name: item.author.name, url: item.author.url, user: item.author.channelID }, name: item.title });
     });
-    channelUsed.nextPlay();
+    currentBot.nextPlay();
 
-    const resource = getYoutubeResource(channelUsed.currentSong.url);
-    player.play(resource);
+    const resource = getYoutubeResource(currentBot.currentSong.url);
+    currentBot.player.play(resource);
     await interaction.reply(':musical_note: Плейлист добавлен в очередь');
 
     const connection = joinVoiceChannel({
@@ -52,6 +51,6 @@ export const playlistCommand = {
       adapterCreator: voiceChannel.guild.voiceAdapterCreator,
     });
     
-    connection.subscribe(player);
+    connection.subscribe(currentBot.player);
   }
 };

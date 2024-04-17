@@ -1,10 +1,9 @@
-import { getVideoDuration, getVideoInfo, getYoutubeResource, getVoiceChat, getPlaylistInfo } from '@/core/lib';
-import { player } from '@/player';
+import { getVideoDuration, getVideoInfo, getYoutubeResource, getVoiceChat } from '@/core/lib';
 import { joinVoiceChannel } from '@discordjs/voice';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { client } from '@/client';
 import ytdl from 'ytdl-core';
-import { Channel } from '@/core/entities/Channel';
+import { Bot } from '@/core/entities/Bot';
 
 export const playCommand = {
   data: new SlashCommandBuilder()
@@ -14,7 +13,7 @@ export const playCommand = {
       option.setName('link')
         .setDescription('Ссылка на ютуб видео.')
         .setRequired(true)),
-  execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
+  execute: async function(interaction: CommandInteraction, currentBot?: Bot): Promise<void> {
     const link = String(interaction.options?.get('link')?.value || '');
     const id = String(new Date().getTime() || link);
 
@@ -45,17 +44,16 @@ export const playCommand = {
     const videoInfo = await getVideoInfo(link);
     const authorInfo = videoInfo.author as ytdl.Author;
     
-    channelUsed.addToQueue({ id, url: link, name: videoInfo.title, author: { name: authorInfo.name, url: authorInfo.channel_url, user: authorInfo.user || 'USER' } });
+    currentBot.addToQueue({ id, url: link, name: videoInfo.title, author: { name: authorInfo.name, url: authorInfo.channel_url, user: authorInfo.user || 'USER' } });
     await interaction.reply(`:musical_note: Добавлено в очередь: ${videoInfo.title} [${getVideoDuration(Number(videoInfo.lengthSeconds))}]`);
 
-    if (channelUsed.queue.length === 1 && !channelUsed.currentSong) {
-      channelUsed.nextPlay();
+    if (currentBot.queue.length === 1 && !currentBot.currentSong) {
+      currentBot.nextPlay();
 
-      const resource = getYoutubeResource(channelUsed.currentSong.url);
-      player.play(resource);
+      const resource = getYoutubeResource(currentBot.currentSong.url);
+      currentBot.player.play(resource);
     }
     
-    connection.subscribe(player);
-
+    connection.subscribe(currentBot.player);
   }
 };

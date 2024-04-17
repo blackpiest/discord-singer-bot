@@ -1,14 +1,13 @@
 import { getYoutubeResource, getVoiceChat } from '@/core/lib';
-import { player } from '@/player';
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js';
 import { client } from '@/client';
-import { Channel } from '@/core/entities/Channel';
+import { Bot } from '@/core/entities/Bot';
 
 export const skipCommand = {
   data: new SlashCommandBuilder()
     .setName('skip')
     .setDescription('Включить следующий трек из очереди.'),
-  execute: async function(interaction: CommandInteraction, channelUsed?: Channel): Promise<void> {
+  execute: async function(interaction: CommandInteraction, currentBot?: Bot): Promise<void> {
     const voiceChannel = getVoiceChat(client, interaction);
     if(!voiceChannel) {
       await interaction.reply({ content: 'Необходимо находиться в голосовом канале.', ephemeral: true });
@@ -16,18 +15,18 @@ export const skipCommand = {
       return;
     }
 
-    if (!channelUsed.currentSong && !channelUsed.queue.length) {
+    if (!currentBot.currentSong && !currentBot.queue.length) {
       await interaction.reply({ content: 'Треков в очереди нет.', ephemeral: true });
       return;
     }
 
-    player.stop();
-    channelUsed.nextPlay();
+    currentBot.player.stop();
+    currentBot.nextPlay();
     console.log('[DISCORD-SINGER-BOT]: Пропуск трека.');
-    const resource = getYoutubeResource(channelUsed.currentSong?.url);
+    const resource = getYoutubeResource(currentBot.currentSong?.url);
     if (resource) {
-      player.play(resource);
-      await interaction.reply(`:track_next: Останавливаю текущий трек. Включаю ${channelUsed.currentSong.name}`);
+      currentBot.player.play(resource);
+      await interaction.reply(`:track_next: Останавливаю текущий трек. Включаю ${currentBot.currentSong.name}`);
       console.log('Включается следующий трек.');
     } else {
       await interaction.reply(':track_next: Останавливаю текущий трек. В очереди больше нет треков.');

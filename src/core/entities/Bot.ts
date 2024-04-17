@@ -1,7 +1,11 @@
+import { AudioPlayer, AudioPlayerStatus, createAudioPlayer } from '@discordjs/voice';
 import { QueueItem } from './../interfaces';
+import { getYoutubeResource } from '../lib';
 
-export class Channel {
-  channelId: string;
+export class Bot {
+  private channelId: string;
+  public player: AudioPlayer | null;
+
   private _queue: QueueItem[];
   private _currentSong: QueueItem | null;
   private _repeatEnabled: boolean;
@@ -13,6 +17,27 @@ export class Channel {
     this._currentSong = null;
     this._repeatEnabled = false;
     this._pauseEnabled = false;
+    this.player = createAudioPlayer();
+    this.initPlayer();
+  }
+
+  private initPlayer() {
+    this.player.on('error', error => {
+      console.error('[DISCORD-PLAYER]: ', error.message, 'with track', error.resource.metadata);
+    });
+    
+    this.player.on('stateChange', (_oldState, newState) => {
+      if (newState.status === AudioPlayerStatus.Idle) {
+        console.log('[DISCORD-PLAYER]: Проигрывание ресурса закончено');
+        this.nextPlay();
+        
+        if (this.currentSong) {
+          const resource = getYoutubeResource(this.currentSong.url);
+          console.log('[DISCORD-PLAYER]: Началось проигрывание: ', this.currentSong);
+          this.player.play(resource);
+        }
+      }
+    });
   }
 
   public get queue(): QueueItem[] {

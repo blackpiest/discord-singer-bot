@@ -13,7 +13,7 @@ export default {
   externals: [nodeExternals()],
   entry: {
     'discord-bot': './src/index.ts',
-    'deploy-commands': './src/bot/deployCommands.ts',
+    'deploy-commands': './src/deployCommands.ts',
   },
   output: {
     filename: '[name].js',
